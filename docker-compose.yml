@@ -21,7 +21,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: orc-shack-api
     environment:
       DATABASE_URL: postgresql+psycopg://dancingponysvc:password@postgres:5432/dancingpony
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-replace-with-a-secure-secret}
