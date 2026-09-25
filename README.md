@@ -225,8 +225,8 @@ source venv/bin/activate
 Install the dependencies:
 
 ```bash
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
 ```
 
 Create the environment configuration:
@@ -250,7 +250,7 @@ alembic upgrade head
 Create the **default admin user**:
 
 ```bash
-python -m scripts.create_admin
+python3 -m scripts.create_admin
 ```
 
 Start the FastAPI application:
@@ -769,7 +769,7 @@ make test
 Alternatively:
 
 ```bash
-./venv/bin/python -m pytest
+./venv/bin/python3 -m pytest
 ```
 
 The test suite should complete successfully before changes are considered ready.

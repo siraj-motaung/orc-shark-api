@@ -19,8 +19,8 @@ source "$VENV_DIR/bin/activate"
 
 echo "==> Installing dependencies..."
 
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
 
 echo "==> Checking environment configuration..."
 
@@ -37,15 +37,15 @@ docker compose up -d postgres
 
 echo "==> Running database migrations..."
 
-python -m alembic upgrade head
+python3 -m alembic upgrade head
 
 echo "==> Creating admin user..."
 
-python -m scripts.create_admin
+python3 -m scripts.create_admin
 
 echo "==> Starting FastAPI..."
 
-python -m uvicorn app.main:app \
+python3 -m uvicorn app.main:app \
     --host 127.0.0.1 \
     --port 8000 \
     --reload

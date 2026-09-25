@@ -29,17 +29,17 @@ test:
 	./scripts/test.sh
 
 migrate:
-	./venv/bin/python -m alembic upgrade head
+	./venv/bin/python3 -m alembic upgrade head
 
 lint:
-	./venv/bin/python -m ruff check .
+	./venv/bin/python3 -m ruff check .
 
 format:
-	./venv/bin/python -m ruff format .
+	./venv/bin/python3 -m ruff format .
 
 check:
-	./venv/bin/python -m ruff check .
-	./venv/bin/python -m pytest -vv --tb=short
+	./venv/bin/python3 -m ruff check .
+	./venv/bin/python3 -m pytest -vv --tb=short
 
 db-up:
 	docker compose up -d postgres
