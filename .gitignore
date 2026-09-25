@@ -1,0 +1,9 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+/venv
+/.vscode
+__pycache__/
+*.py[cod]
+settings.json

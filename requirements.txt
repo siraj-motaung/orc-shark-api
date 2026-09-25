@@ -1,0 +1,15 @@
+alembic
+argon2-cffi
+email-validator==2.3.0
+fastapi
+httpx
+prometheus-fastapi-instrumentator
+psycopg[binary]>=3.1.0,<4.0.0
+pydantic[email]==2.13.5
+pydantic-settings
+PyJWT
+pytest
+ruff
+sqlalchemy>=2.0.0,<3.0.0
+typing_extensions
+uvicorn[standard]
