@@ -56,12 +56,12 @@ def sample_dish() -> Dish:
 # Override auth dependencies by default to simulate an authenticated customer
 @pytest.fixture(autouse=True)
 def override_auth_dependencies(mock_customer_user: User):
-    """Override get_current_user and require_admin defaults."""
+    """Override only authentication, leaving admin authorization real."""
 
     app.dependency_overrides[get_current_user] = lambda: mock_customer_user
-    app.dependency_overrides[require_admin] = lambda: mock_customer_user
     yield
-    app.dependency_overrides.clear()
+    app.dependency_overrides.pop(get_current_user, None)
+    app.dependency_overrides.pop(require_admin, None)
 
 
 @patch("app.api.v1.dishes.dish_service.create_dish")
@@ -97,6 +97,27 @@ def test_create_dish_as_admin_success(
     assert data["name"] == "Gorgoroth Roasted Ribs"
     assert data["rating_count"] == 0
     assert data["average_rating"] is None
+
+
+@patch("app.api.v1.dishes.dish_service.create_dish")
+def test_create_dish_as_customer_returns_forbidden(
+    mock_create_dish: MagicMock,
+    client: TestClient,
+) -> None:
+    """Verify a customer cannot access the admin-only dish creation endpoint."""
+
+    payload = {
+        "name": "Gorgoroth Roasted Ribs",
+        "description": "Succulent charred ribs coated in dark honey glazed spice.",
+        "price": 24.99,
+        "image": "https://example.com/ribs.jpg",
+    }
+
+    response = client.post("/api/v1/dishes", json=payload)
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json()["code"] == "FORBIDDEN"
+    mock_create_dish.assert_not_called()
 
 
 @patch("app.api.v1.dishes.dish_service.get_all_dishes")
