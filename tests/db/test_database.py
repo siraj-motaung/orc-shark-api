@@ -5,7 +5,7 @@ from unittest.mock import patch
 from app.db.database import check_database_connection
 
 
-def test_check_database_connection_success():
+def test_check_database_connection_success(setup_test_database):
     # GIVEN: The database is availabe
 
     # WHEN: We call the `check_database_connection()` function.

@@ -4,7 +4,8 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.db.database import Base
@@ -21,11 +22,14 @@ TestingSessionLocal = sessionmaker(
 )
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def setup_test_database() -> Generator[None, None, None]:
-    """Create database schema once per test session and clean up afterward."""
+    """Create the test schema for tests that explicitly use the database."""
 
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except SQLAlchemyError as error:
+        pytest.skip(f"Test PostgreSQL database is unavailable: {error}")
 
     yield
 
@@ -33,18 +37,27 @@ def setup_test_database() -> Generator[None, None, None]:
 
 
 @pytest.fixture(scope="function")
-def db_session() -> Generator[Session, None, None]:
+def db_session(setup_test_database: None) -> Generator[Session, None, None]:
     """Provide a transactional database session for each test."""
 
     connection = engine.connect()
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
+    session.begin_nested()
 
-    yield session
+    @event.listens_for(session, "after_transaction_end")
+    def restart_savepoint(session: Session, ended_transaction) -> None:
+        if ended_transaction.nested and not ended_transaction.parent.nested:
+            session.begin_nested()
 
-    session.close()
-    transaction.rollback()
-    connection.close()
+    try:
+        yield session
+    finally:
+        event.remove(session, "after_transaction_end", restart_savepoint)
+        session.close()
+        if transaction.is_active:
+            transaction.rollback()
+        connection.close()
 
 
 @pytest.fixture
