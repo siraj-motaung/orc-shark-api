@@ -45,7 +45,7 @@ The Orc Shack REST API is a RESTful backend for a Middle-earth restaurant.
 
 The API allows authenticated users to interact with the restaurant's dishes and ratings. It provides user registration and login, role-based authorization, dish management, dish search, customer ratings, input validation, brute-force protection, centralized error handling, application logging, automated testing, and Prometheus metrics.
 
-The application was developed as part of the Bash Software Engineer take-home assignment, with a focus on **maintainability, testability, security, observability, and reasonable production readiness**.
+The application was developed as a software engineering take-home project, with a focus on **maintainability, testability, security, observability, and reasonable production readiness**.
 
 ## AI methodology notes
 
@@ -935,7 +935,7 @@ Deliver a REST API that meets the following requirements:
 
 ### Constraints
 
-- At Bash we make extensive use of Golang so first prize will always be to use Golang for your assignment.
+- Golang is preferred for this type of assignment, although Python and JavaScript/TypeScript are also suitable alternatives.
 - Alternative languages we will accept are Python (preferably fastapi), or JS/Typescript
 - Implement a REST API utilizing JSON for request and response bodies where applicable.
 
@@ -971,4 +971,4 @@ Please organise, design, test, and document your code as if it were going into p
 
 Best of luck, and happy coding!
 
-The Bash Team
+The project team

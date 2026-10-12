@@ -10,14 +10,17 @@ from app.core.security import InvalidTokenError, decode_access_token
 from app.db.database import get_session
 from app.models.user import User, UserRole
 
-bearer_scheme = HTTPBearer()
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: Session = Depends(get_session),
 ) -> User:
     """Return the authenticated user presented by the JWT."""
+
+    if credentials is None:
+        raise AuthenticationError("Authentication credentials were not provided.")
 
     jwt_token = credentials.credentials
 

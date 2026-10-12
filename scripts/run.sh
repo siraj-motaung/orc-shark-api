@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 set -e
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 VENV_DIR="$PROJECT_ROOT/venv"
 
 cd "$PROJECT_ROOT"
@@ -15,7 +15,7 @@ fi
 
 echo "==> Activating virtual environment..."
 
-source "$VENV_DIR/bin/activate"
+. "$VENV_DIR/bin/activate"
 
 echo "==> Installing dependencies..."
 
