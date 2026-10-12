@@ -79,7 +79,7 @@ def test_register_user_validation_error_mismatched_passwords(
         "name": "Warchief",
         "email": "warchief@orctrader.com",
         "password": "password123",
-        "password_confirm": "differentPassword123",
+        "confirm_password": "differentPassword123",
     }
 
     # WHEN: Posting to /auth/register

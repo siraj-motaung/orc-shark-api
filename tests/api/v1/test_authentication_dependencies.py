@@ -76,3 +76,58 @@ def test_protected_route_rejects_invalid_token(
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json()["code"] == "INVALID_CREDENTIALS"
     mock_get_all_dishes.assert_not_called()
+
+
+@patch("app.api.v1.dishes.dish_service.get_all_dishes")
+def test_protected_route_rejects_missing_credentials(
+    mock_get_all_dishes: MagicMock, client: TestClient
+) -> None:
+    """Verify a protected route returns 401 when no bearer token is provided."""
+
+    response = client.get("/api/v1/dishes")
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["code"] == "INVALID_CREDENTIALS"
+    mock_get_all_dishes.assert_not_called()
+
+
+@patch("app.api.v1.dishes.dish_service.get_all_dishes")
+def test_protected_route_rejects_expired_token(
+    mock_get_all_dishes: MagicMock,
+    client: TestClient,
+    authenticated_db: MagicMock,
+) -> None:
+    """Verify an expired JWT returns 401 before the route service is called."""
+
+    token = create_access_token(user_id=7, expires_in_minutes=-1)
+
+    response = client.get(
+        "/api/v1/dishes",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["code"] == "INVALID_CREDENTIALS"
+    authenticated_db.scalar.assert_not_called()
+    mock_get_all_dishes.assert_not_called()
+
+
+@patch("app.api.v1.dishes.dish_service.get_all_dishes")
+def test_protected_route_rejects_token_for_unknown_user(
+    mock_get_all_dishes: MagicMock,
+    client: TestClient,
+    authenticated_db: MagicMock,
+) -> None:
+    """Verify a valid token for a missing user returns 401."""
+
+    authenticated_db.scalar.return_value = None
+    token = create_access_token(user_id=999, expires_in_minutes=15)
+
+    response = client.get(
+        "/api/v1/dishes",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["code"] == "INVALID_CREDENTIALS"
+    mock_get_all_dishes.assert_not_called()
