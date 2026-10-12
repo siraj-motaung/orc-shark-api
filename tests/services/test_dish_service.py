@@ -100,7 +100,7 @@ def test_get_dish_by_id_raises_not_found(
 
 @patch("app.services.dish_service.dish_repository")
 def test_get_all_dishes_delegates_to_repo(
-    mock_repo: MagicMock, mock_db: MagicMock
+    mock_repo: MagicMock, mock_db: MagicMock, sample_dish: Dish
 ) -> None:
     """Verify get_all_dishes delegates directly to repository."""
     # GIVEN: Repository returning named dish summaries
@@ -116,11 +116,13 @@ def test_get_all_dishes_delegates_to_repo(
     # THEN: We expect the List to be returned unchanged
     mock_repo.get_all_dishes.assert_called_once_with(mock_db)
     assert len(results) == 2
+    assert results[0].dish == sample_dish
+    assert results[1].rating_count == 3
 
 
 @patch("app.services.dish_service.dish_repository")
 def test_search_dishes_delegates_to_repo(
-    mock_repo: MagicMock, mock_db: MagicMock
+    mock_repo: MagicMock, mock_db: MagicMock, sample_dish: Dish
 ) -> None:
     """Verify search_dishes passes search query string to repository."""
 
@@ -133,6 +135,7 @@ def test_search_dishes_delegates_to_repo(
     # THEN: Query parameter is passed to repository search method
     mock_repo.search_dishes.assert_called_once_with(mock_db, "ribs")
     assert len(results) == 1
+    assert results[0].dish == sample_dish
 
 
 @patch("app.services.dish_service.dish_repository")
