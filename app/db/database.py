@@ -1,7 +1,8 @@
 import logging
-from collections.abc import Iterator
+from collections.abc import Generator
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
@@ -24,7 +25,7 @@ class Base(DeclarativeBase):
     """Base declarative class for all SQLAlchemy ORM models."""
 
 
-def get_session() -> Iterator[Session]:
+def get_session() -> Generator[Session, None, None]:
     """
     Dependency that yields a database session per request
     and guarantees closure upon completion.
@@ -49,6 +50,6 @@ def check_database_connection() -> bool:
             connection.execute(text("SELECT 1"))
         return True
 
-    except Exception:
-        logger.exception("Database connectivity check failed: %s")
+    except SQLAlchemyError:
+        logger.exception("Database connectivity check failed")
         return False
