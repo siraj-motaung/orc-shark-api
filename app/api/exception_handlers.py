@@ -11,8 +11,8 @@ from app.core.exceptions import AppError
 logger = logging.getLogger(__name__)
 
 
-async def handle_app_error(
-    request: Request,
+def handle_app_error(
+    _request: Request,
     error: AppError,
 ) -> JSONResponse:
     """Handle expected application errors."""
@@ -23,7 +23,7 @@ async def handle_app_error(
     )
 
 
-async def handle_unexpected_error(request: Request, error: Exception) -> JSONResponse:
+def handle_unexpected_error(request: Request, _error: Exception) -> JSONResponse:
     """Handle unexpected errors without exposing implementation details."""
 
     logger.exception(
@@ -40,8 +40,8 @@ async def handle_unexpected_error(request: Request, error: Exception) -> JSONRes
     )
 
 
-async def handle_validation_error(
-    request: Request,
+def handle_validation_error(
+    _request: Request,
     error: RequestValidationError,
 ) -> JSONResponse:
     """Handle request validation errors consistently."""
@@ -49,15 +49,10 @@ async def handle_validation_error(
     errors = []
 
     for validation_error in error.errors():
-        message = validation_error["msg"]
-
-        if message.startswith("Value error, "):
-            message = message.removeprefix("Value error, ")
-
         errors.append(
             {
-                "field": validation_error["loc"][-1],
-                "message": message,
+                "field": ".".join(str(part) for part in validation_error["loc"]),
+                "message": validation_error["msg"],
             }
         )
 
